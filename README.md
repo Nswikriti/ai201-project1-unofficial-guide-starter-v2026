@@ -21,8 +21,7 @@
 
 ## What This Does
 
-The Unofficial Guide is a document-based question-answering project using the `campus_life` corpus, which contains 88 short posts about student life. It is designed to answer questions about course deadlines, campus jobs, dining dollars, parking, and graduation requirements using information from those documents. The system searches for relevant passages and is intended to generate answers that cite their sources and refuse questions the documents do not cover. Document indexing is working; answer generation and refusal behavior still need to be tested.
-
+The Unofficial Guide is a document-based question-answering project using the `campus_life` corpus, which contains 88 short posts about student life. It is designed to answer questions about course deadlines, campus jobs, dining dollars, parking, and graduation requirements using information from those documents. The system searches for relevant passages and is intended to generate answers that cite their sources and refuse questions the documents do not cover. Document indexing is working; answer generation, and the refusal behavior have all been tested and confirmed working.
 ## Chunking Strategy
 
 **Chunk size:** One complete document per chunk, with variable length.
