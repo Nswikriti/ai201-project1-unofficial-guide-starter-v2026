@@ -151,14 +151,22 @@ possible question or prove that generated answers are accurate.
 
      Milestone 5. -->
 
-**1.**
+**1. Changing the chunker**
+I asked claude to help interpret my indexing results and change the
+starter chunker. It suggested keeping each short campus document intact
+and provided code for `split_documents`. My first rerun still reported
+`fallback_split`, so I corrected the function replacement, saved the file,
+and reran indexing. The output then confirmed `split_documents` produced
+88 chunks. I kept the suggested strategy, but checked that the code
+actually running matched the function named in my README.
 
-**2.**
-
-<!-- ── Stretch features ─────────────────────────────────────────────────────
-     Doing one? Say so here BEFORE you start. A feature this README never
-     claims earns nothing.
-     ───────────────────────────────────────────────────────────────────────── -->
+**2. Choosing the relevance cutoff**
+I shared retrieval results for five campus questions and five unrelated
+questions with claude. It compared the best distances and recommended
+retaining the existing cutoff of 0.6. I left the cutoff unchanged and
+updated my README with the ten measured scores and their ranges. I also
+included the limitation that passing these retrieval checks does not
+prove generated answers are accurate.
 
 ---
 
