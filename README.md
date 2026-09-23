@@ -107,9 +107,9 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
 <!-- One complete question and answer, pasted as text, with the source line
      visible. Milestone 4. -->
 
-**Question:**
+**Question:** What is the deadline to add a course?
 
-**Answer:**
+**Answer:** You can add a course through the end of the second week (admin_add_drop_deadline.txt)
 
 ```
 ```
