@@ -114,20 +114,31 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
 ```
 ```
 
-**My relevance cutoff:**
+**My relevance cutoff:** 0.6
 
-<!-- The number you set in config.py, and how you got there.
+I retained the starter's cutoff after comparing five in-corpus questions
+with five out-of-scope questions. The in-corpus best distances ranged
+from 0.2042 to 0.3843. The out-of-scope best distances ranged from
+0.8246 to 0.9340.
 
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
-
-     Milestone 4. -->
+The cutoff of 0.6 lies between these groups. It allowed all five
+in-corpus questions through and rejected all five out-of-scope
+questions in these retrieval checks. These results support keeping
+0.6 for this test set, but do not guarantee correct behavior for every
+possible question or prove that generated answers are accurate.
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| What is the deadline to add a course? | Yes | 0.3287 |
+| Which type of campus job earnings does not count against financial aid the way ordinary income does? | Yes | 0.2042 |
+| What happens to unused dining dollars at the end of the spring semester? | Yes | 0.2407 |
+| Where can students legally park if they miss out on a west lot permit? | Yes | 0.3001 |
+| For graduation, must the two writing-intensive courses be taken in the same department or different departments? | Yes | 0.3843 |
+| What is the capital of Mongolia? | No | 0.8246 |
+| How do I change the oil in a diesel engine? | No | 0.9340 |
+| Who won the 1994 World Cup? | No | 0.8859 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.8442 |
+| How do I write a for loop in Rust? | No | 0.8960 |
 
 ## How I Used AI
 
