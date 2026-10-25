@@ -212,31 +212,27 @@ prove generated answers are accurate.
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunks contain the answer | MET | All five questions retrieved a document containing the answer in each of the three runs. |
+| 2 | Every answer names a source | MET | All 15 answers included a source filename. |
+| 3 | Gate stops out-of-corpus questions | MET | The gate refused all five unrelated questions. A follow-up check confirmed the required refusal wording and zero model calls. |
+| 4 | Chunks keep rules and conditions together | MET | Comparing the five sample chunks with their original documents showed that all five preserved the relevant conditions and qualifications. |
+| 5 | Sources support the answer | MET | Every factual claim in each of the 15 answers was supported by the cited document. |
 
 ## Diagnoses
 
-<!-- For each miss: which stage caused it, and how. The stage alone isn't
-     enough — you need the mechanism.
+None of my five criteria was missed in the baseline evaluation.
+However, my questions each ask for a specific fact contained in one
+short document. These results do not establish performance on ambiguous
+questions or questions requiring information from several documents.
 
-     Not a diagnosis: "Question 3 didn't work."
-     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
-                       one sentence that got split across two chunks, so
-                       neither chunk on its own contains it."
+The retrieval logs also show that five chunks are supplied even when
+one document contains the complete answer. Some additional results
+concern unrelated topics. This did not cause an observed answer error,
+but it suggests an opportunity to reduce unnecessary context.
 
-     The five stages: loading → chunking → embedding → retrieval → generation.
-
-     Look for a pattern. If three misses all ask about numbers, that's one
-     problem, not three.
-
-     Missed nothing? Say so, then say honestly whether your targets were set
-     low, and which one you'd tighten and to what.
-
-     Milestone 3. -->
+For a future evaluation, I would consider tightening criterion 1 to
+require the answer in the top three results for all five questions.
+I am keeping the original criterion unchanged for this comparison.
 
 ## The Improvement
 
@@ -254,11 +250,52 @@ prove generated answers are accurate.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunks contain the answer | At least 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | At least 4 of 5 | 5/5 refused | 5/5 refused | 5/5 refused | MET |
+| 4. Chunks keep rules and conditions together | At least 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Sources support the answer | At least 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+Evidence: results/run_2026-09-23_2122_before.md, produced by
+run_eval.py::main. Retrieval used store.py::search, with chunks
+produced by chunker.py::split_documents.
+
+Each campus question was tested three times with caching disabled.
+I manually reviewed the generated answers against the source documents.
+The relevance gate was measured once because its results are deterministic;
+the same measurement is shown in all three columns.
+### Relevance gate evidence
+
+The baseline evaluation refused all five out-of-scope questions.
+A follow-up check confirmed the exact refusal wording and that no
+model call was made.
+
+Command: `python app.py --corpus campus_life ask "What is the capital of Mongolia?"`
+
+```text
+(best distance 0.825, cutoff 0.6)
+
+I don't have enough information about that.
+
+0 model calls this session
+```
+### Chunk comparison evidence
+
+I compared the five README sample chunks, produced by
+chunker.py::split_documents, with their original files in
+corpora/campus_life/documents/.
+
+| Source | Conditions or qualifications preserved | Result |
+|---|---|---|
+| admin_add_drop_deadline.txt | Adding ends in week two; dropping ends in week six, but drops after week two receive a W. | PASS |
+| course_biol_160.txt | Four unit tests and a cumulative final, no curve, and tests roughly every three weeks. | PASS |
+| course_hist_118_workload.txt | About 120 pages per week, no problem sets, and a heavier first month. | PASS |
+| dining_pellew_dining_hall_followup.txt | The 12–18 minute wait applies at peak times; arriving before 11:45 is suggested. | PASS |
+| housing_innisfree_hall.txt | No air conditioning matters in early September; noise is moderate, with a quieter short wing. | PASS |
+
+All five samples retain the original context. Several contain advice
+rather than formal rules, so I checked that their qualifications were
+preserved as well. This was one comparison of the fixed sample chunks;
+the same result is repeated across the three run columns.
 
 **Did it help?**
 
