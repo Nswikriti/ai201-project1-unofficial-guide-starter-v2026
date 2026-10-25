@@ -250,10 +250,6 @@ them. I am testing whether retrieving fewer chunks preserves performance
 against my original criteria while reducing the context sent to the model.
 
 ### Run Log — After
-
-<!-- Same format, same five criteria, three runs each.
-     `python run_eval.py --label after` -->
-
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
 | 1. Retrieved chunks contain the answer | At least 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
@@ -261,14 +257,49 @@ against my original criteria while reducing the context sent to the model.
 | 3. Gate stops out-of-corpus questions | At least 4 of 5 | 5/5 refused | 5/5 refused | 5/5 refused | MET |
 | 4. Chunks keep rules and conditions together | At least 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 5. Sources support the answer | At least 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
-Evidence: results/run_2026-09-23_2122_before.md, produced by
-run_eval.py::main. Retrieval used store.py::search, with chunks
-produced by chunker.py::split_documents.
 
-Each campus question was tested three times with caching disabled.
-I manually reviewed the generated answers against the source documents.
-The relevance gate was measured once because its results are deterministic;
-the same measurement is shown in all three columns.
+Evidence: results/run_2026-10-24_2204_after_topk3.md, produced by
+run_eval.py::main. Retrieval used store.py::search with TOP_K = 3
+and a relevance cutoff of 0.6.
+
+I manually reviewed all 15 answers. Each answered the question and
+named a document supporting its factual claims. All five questions
+still retrieved the document containing the answer.
+
+The gate result comes from one deterministic pass, repeated across
+the columns. The chunk comparison result is carried forward from
+the baseline inspection because neither the documents nor the
+chunking function changed.
+### After-run output examples
+
+These excerpts are from run_eval.py::main in
+results/run_2026-10-24_2204_after_topk3.md.
+
+For the add-course deadline question, run 1 retrieved:
+admin_add_drop_deadline.txt, admin_pass_fail_option.txt,
+advising_registration.txt.
+
+```text
+You can add a course through the end of the second week (admin_add_drop_deadline.txt).
+```
+
+For the parking question, run 1 produced:
+
+```text
+If students miss the window for a west lot permit, they can legally park on Verrill Street and walk in (admin_parking_permits.txt).
+```
+
+The gate check, produced by run_eval.py::check_out_of_scope, recorded:
+
+| Out-of-scope question | Best distance | Gate |
+|---|---|---|
+| What is the capital of Mongolia? | 0.825 | refused |
+| How do I change the oil in a diesel engine? | 0.934 | refused |
+| Who won the 1994 World Cup? | 0.886 | refused |
+| What is the recommended dosage of ibuprofen for a headache? | 0.844 | refused |
+| How do I write a for loop in Rust? | 0.896 | refused |
+
+
 ### Relevance gate evidence
 
 The baseline evaluation refused all five out-of-scope questions.
@@ -304,27 +335,49 @@ preserved as well. This was one comparison of the fixed sample chunks;
 the same result is repeated across the three run columns.
 
 **Did it help?**
+Yes, it reduced the amount of input sent to the model while preserving
+performance on my five test questions. Across 15 model calls, input
+tokens decreased from 8,181 to 5,463: a reduction of 2,718 tokens,
+or approximately 33.2%. Both evaluations had caching disabled.
 
-<!-- Say plainly whether it did, and how you know. If it made things worse,
-     say that — a change that backfired, honestly reported, earns full credit
-     and is more interesting than one that worked. What matters is that you can
-     tell.
+All five criteria remained met. All 15 answers cited supporting
+documents, and the gate still refused all five unrelated questions.
+This is an efficiency improvement on this test set, not evidence
+of improved answer accuracy, since the baseline already passed.
 
-     Milestone 4. -->
+The runs occurred on different dates, so this was not a tightly
+controlled same-day comparison. I did not measure response time,
+and I cannot claim that the system became faster.
+
 
 ## What's Still Broken
 
-<!-- For each criterion still missed after your fix: what you'd do about it,
-     and why you stopped where you did.
+None of my original criteria was missed after the change. However,
+the evaluation covers only five direct factual questions and five
+clearly unrelated questions. It does not establish how reliably
+the system handles vague campus questions, missing campus facts,
+or questions requiring information from several documents.
 
-     "I ran out of time" is fine if it's true. Pretending nothing is left is
-     not.
-
-     Milestone 5. -->
+My next step would be to add those harder cases, especially questions
+that sound related to campus life but cannot be answered from the
+corpus. I stopped after evaluating one change so the comparison
+remained focused on reducing TOP_K from five to three.
 
 ## What I'd Do Differently
 
-<!-- Knowing what you know now — which of your five criteria would you write
-     differently, and why?
+I would make criterion 4 more precise about which samples count.
+Some of my sample documents contain advice rather than formal rules.
+In a future evaluation, I would deliberately select five documents
+with explicit conditions or exceptions and list the details that
+each chunk must preserve.
 
-     Milestone 5. -->
+I would also make criterion 2 explicitly apply to answers to
+in-corpus questions, since a correct refusal does not need a source
+citation. For criterion 3, I would include campus-related questions
+whose answers are absent from the documents, alongside clearly
+unrelated questions.
+
+Finally, I would define an efficiency measure before testing, such
+as input tokens across the same 15 calls. That would let me assess
+the purpose of the TOP_K change directly. These are proposals for
+future evaluations; I have kept my original targets unchanged. 
