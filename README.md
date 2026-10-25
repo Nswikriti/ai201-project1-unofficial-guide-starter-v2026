@@ -238,10 +238,16 @@ I am keeping the original criterion unchanged for this comparison.
 
 **What I changed:**
 
+I reduced TOP_K from 5 to 3 in config.py. The system now retrieves
+three chunks per question. I kept the corpus, chunking strategy,
+embedding model, generation model, and relevance cutoff unchanged.
+
 **Why I picked it:**
 
-<!-- Connect it to a specific diagnosis above in one sentence. If you can't,
-     you picked a fix because it sounded impressive. -->
+All five baseline questions were answered correctly, but the retrieved
+results included additional documents that were not needed to answer
+them. I am testing whether retrieving fewer chunks preserves performance
+against my original criteria while reducing the context sent to the model.
 
 ### Run Log — After
 
