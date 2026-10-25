@@ -1,6 +1,6 @@
 # The Unofficial Guide
 
-<!-- Replace this line with your name and which corpus you picked. -->
+Swikriti Neupane — Corpus: campus_life
 
 > **This file is your submission.** Fill it in as you go — most sections get
 > written during the milestone that produces them, not at the end.
@@ -141,14 +141,6 @@ possible question or prove that generated answers are accurate.
 
 ## How I Used AI
 
-<!-- Two specific moments. For each: what you asked for, what came back, and
-     what you changed about it.
-
-     "I asked Claude to write the chunking function from my notes. It ignored
-     the overlap, so I added that myself" is the level of detail we're after.
-     "I used AI to help me code" is not.
-
-     Milestone 5. -->
 
 **1. Changing the chunker**
 I asked claude to help interpret my indexing results and change the
@@ -171,44 +163,48 @@ prove generated answers are accurate.
 
 # Unit 2
 
-<!-- These sections get ADDED to what's already above. Don't delete or rewrite
-     unit 1 — the point is that someone can see what you said before you knew
-     how it went. -->
 
 ## Run Log — Before
 
-<!-- Your five criteria, three runs each. `python run_eval.py --label before`
-     runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
-     writes it all into results/ for you. Targets come from criteria.md; the
-     verdict column is your call.
-
-     Criterion 3 is measured in one deterministic pass rather than three, so
-     the same number goes in all three run columns. That's correct, not lazy.
-
-     Milestone 1. -->
-
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunks contain the answer | At least 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | At least 4 of 5 | 5/5 refused | 5/5 refused | 5/5 refused | MET |
+| 4. Chunks keep rules and conditions together | At least 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Sources support the answer | At least 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
 
-<!-- Underneath, paste the REAL output for each criterion from one of your
-     runs — the actual text your system produced, not a description of it.
-     Name the file and function that produced it. -->
+Evidence: results/run_2026-09-23_2122_before.md, produced by
+run_eval.py::main. Retrieval used store.py::search, with chunks
+produced by chunker.py::split_documents. TOP_K was 5 and the
+relevance cutoff was 0.6.
+
+Each campus question was tested three times with caching disabled.
+The answers were manually checked against their cited documents.
+
+The gate was measured once because its results are deterministic.
+The five sample chunks were compared with their original documents
+once. Those two measurements are repeated across the run columns.
+
+### Baseline output evidence
+
+Question: What is the deadline to add a course?
+
+Run 1 retrieved:
+admin_add_drop_deadline.txt, admin_graduation_requirements.txt,
+admin_pass_fail_option.txt, advising_registration.txt, course_cs_340.txt.
+
+Actual answer from run_eval.py::main:
+
+```text
+You can add a course through the end of the second week (admin_add_drop_deadline.txt).
+```
+
+This example shows that retrieval included the answer-bearing document,
+the generated answer named its source, and the deadline matched the
+source text. The complete log contains all 15 answers.
 
 ## Verdicts
-
-<!-- MET or MISSED for each of the five, against the target you wrote last
-     unit — not a new one. Plus a sentence on how you decided. That sentence
-     matters most where it was close.
-
-     If your target said 4 of 5 and your runs came out 4, 3, 4, that's a MISS.
-     The target has to hold, not show up occasionally.
-
-     Milestone 2. -->
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
@@ -248,6 +244,11 @@ All five baseline questions were answered correctly, but the retrieved
 results included additional documents that were not needed to answer
 them. I am testing whether retrieving fewer chunks preserves performance
 against my original criteria while reducing the context sent to the model.
+My first run labelled "after" still used TOP_K = 5 because the
+configuration change had not been saved. That log is preserved in
+results/run_2026-10-24_2153_after.md, but it is excluded from the
+before-and-after comparison. After verifying TOP_K = 3, I ran
+the evaluation labelled after_topk3.
 
 ### Run Log — After
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
